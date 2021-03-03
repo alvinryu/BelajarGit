@@ -33,6 +33,7 @@ namespace API.Migrations
                     b.ToTable("Tb_M_Account");
                 });
 
+
             modelBuilder.Entity("API.Models.AccountRole", b =>
                 {
                     b.Property<string>("NIK")
@@ -47,6 +48,7 @@ namespace API.Migrations
 
                     b.ToTable("Tb_T_AccountRole");
                 });
+
 
             modelBuilder.Entity("API.Models.Education", b =>
                 {
@@ -63,12 +65,16 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+
                     b.Property<int>("Univeristy_Id")
+
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+
                     b.HasIndex("Univeristy_Id");
+
 
                     b.ToTable("Tb_M_Education");
                 });
@@ -123,12 +129,14 @@ namespace API.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
+
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Tb_M_Role");
                 });
+
 
             modelBuilder.Entity("API.Models.University", b =>
                 {
@@ -157,6 +165,7 @@ namespace API.Migrations
                     b.Navigation("Person");
                 });
 
+
             modelBuilder.Entity("API.Models.AccountRole", b =>
                 {
                     b.HasOne("API.Models.Role", "Role")
@@ -176,11 +185,14 @@ namespace API.Migrations
                     b.Navigation("Role");
                 });
 
+
             modelBuilder.Entity("API.Models.Education", b =>
                 {
                     b.HasOne("API.Models.University", "University")
                         .WithMany("Education")
+
                         .HasForeignKey("Univeristy_Id")
+
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -206,11 +218,13 @@ namespace API.Migrations
                     b.Navigation("Education");
                 });
 
+
             modelBuilder.Entity("API.Models.Account", b =>
                 {
                     b.Navigation("AccountRoles");
 
                     b.Navigation("Profiling");
+
                 });
 
             modelBuilder.Entity("API.Models.Education", b =>
@@ -225,7 +239,9 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.Role", b =>
                 {
+
                     b.Navigation("AccountRoles");
+
                 });
 
             modelBuilder.Entity("API.Models.University", b =>

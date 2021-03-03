@@ -16,12 +16,14 @@ namespace API.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "This field is required")]
+
         public string Degree { get; set; }
 
         [Required(ErrorMessage = "This field is required")]
         public string GPA { get; set; }
 
         [Required(ErrorMessage = "This field is required")]
+
         public int Univeristy_Id { get; set; }
 
         public virtual University University { get; set; }
@@ -30,3 +32,4 @@ namespace API.Models
         public virtual List<Profiling> Profiling { get; set; }
     }
 }
+

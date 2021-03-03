@@ -1,7 +1,13 @@
-﻿using API.Repository.Interface;
-using Microsoft.AspNetCore.Mvc;
-using System;
+
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using API.Repository.Interface;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace API.Base.Controller
 {
@@ -12,55 +18,85 @@ namespace API.Base.Controller
         where Repository : IRepository<Entity, Key>
     {
         private readonly Repository repository;
+
         public BaseController(Repository repository)
         {
             this.repository = repository;
         }
+
         [HttpGet]
         public ActionResult<Entity> Get()
         {
-            var result = repository.Get();
-            return (result != null) ? (ActionResult)Ok(new { status = HttpStatusCode.OK, messages = "Data Is Found!", data = result, }) : StatusCode(500, new { data = result, status = HttpStatusCode.InternalServerError, errorMessage = "Cannot get the data" });
+            var data = repository.Get();
+
+            if (data != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data, message = "Data Ditemukan" });
+            }
+            else
+            {
+                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, data, message = "Terjadi Kesalahan" });
+            }
         }
+
+        [HttpGet("{key}")]
+        public ActionResult<Entity> Get(Key key)
+        {
+            var data = repository.Get(key);
+
+            if (data != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data, message = "Data Ditemukan" });
+            }
+            else
+            {
+                return NotFound(new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan" });
+            }
+        }
+
         [HttpPost]
-        public ActionResult Post(Entity entity)
+        public ActionResult<Entity> Create(Entity entity)
+        {
+            var data = repository.Create(entity);
+
+            if (data != 0)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data, message = "Berhasil Membuat Data Baru" });
+            }
+            else
+            {
+                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Gagal Membuat Data Baru" });
+            }
+        }
+
+        [HttpPut]
+        public ActionResult<Entity> Update(Entity entity)
         {
             if (entity == null)
-                return BadRequest(new { status = HttpStatusCode.BadRequest, errorMessage = "All input data need to be inserted" });
-            var result = repository.Create(entity);
-            return (result != 0) ? (ActionResult)Ok(new { status = HttpStatusCode.OK }) : StatusCode(500, new { status = HttpStatusCode.InternalServerError, errorMessage = "Failed to input the data" });
+            {
+                return BadRequest(new { status = HttpStatusCode.BadRequest, message = "Data Yang Di-Input Salah / Tidak Lengkap" });
+            }
+
+            var data = repository.Update(entity);
+
+            if (data != 0)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data, message = "Berhasil Update Data" });
+            }
+            else
+            {
+                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Gagal Update Data" });
+            }
         }
+
         [HttpDelete("{key}")]
-        public ActionResult Delete(Key key)
+        public ActionResult<Entity> Delete(Key key)
         {
-            try
-            {
-                var result = repository.Delete(key);
-                return (result != 0) ? (ActionResult)Ok(new { status = HttpStatusCode.OK }) : StatusCode(500, new { status = HttpStatusCode.InternalServerError });
-            }
-            catch
-            {
-                return NotFound("ID Not Found");
-            }
-        }
-        [HttpPut]
-        public ActionResult Put(Entity entity)
-        {
-            try
-            {
-                var result = repository.Update(entity);
-                return Ok(new { status = HttpStatusCode.OK });
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, errorMessage = "Failed to input the data" });
-            }
-        }
-        [HttpGet("{key}")]
-        public ActionResult Get(Key key)
-        {
-            var result = repository.Get(key);
-            return (result != null) ? (ActionResult)Ok(new { data = result, status = HttpStatusCode.OK }) : NotFound(new { data = result, status = HttpStatusCode.NotFound, errorMessage = "ID is not identified" });
+            var data = repository.Delete(key);
+
+            return (data != 0) ? Ok(new { status = HttpStatusCode.OK, message = "Berhasil Delete Data" }) :
+                StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Gagal Delete Data" });
+
         }
     }
 }

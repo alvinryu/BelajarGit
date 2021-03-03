@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text.Json.Serialization;
+
 using System.Threading.Tasks;
 
 namespace API.Models
@@ -16,3 +18,4 @@ namespace API.Models
         public virtual ICollection<AccountRole> AccountRoles { get; set; }
     }
 }
+

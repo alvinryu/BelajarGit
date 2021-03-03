@@ -1,5 +1,6 @@
 {
   "version": 2,
+
   "dgSpecHash": "TZRhp+7WGdlYihHz50LWD1OTKxwbHAy+C69p+pPTakLHrz3o2EHBobaPyTEhusEKh4eUsJwf2lILcW0BU+vBqA==",
   "success": true,
   "projectFilePath": "C:\\Users\\Admin\\Documents\\Exercise\\BelajarGit\\API\\API.csproj",
@@ -235,6 +236,7 @@
     "C:\\Users\\Admin\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512"
+
   ],
   "logs": []
 }

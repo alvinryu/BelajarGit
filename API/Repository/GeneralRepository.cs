@@ -4,19 +4,33 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace API.Repository {
+namespace API.Repository
+{
     public class GeneralRepository<Context, Entity, Key> : IRepository<Entity, Key>
-            where Entity : class
-            where Context : MyContext
+        where Entity : class
+        where Context : MyContext
     {
         private readonly MyContext myContext;
         private readonly DbSet<Entity> entities;
-
+        
         public GeneralRepository(MyContext myContext)
         {
             this.myContext = myContext;
             entities = myContext.Set<Entity>();
+        }
+
+        public IEnumerable<Entity> Get()
+        {
+            var result = entities.ToList();
+            return result;
+        }
+
+        public Entity Get(Key key)
+        {
+            var result = entities.Find(key);
+            return result;
         }
 
         public int Create(Entity entity)
@@ -25,37 +39,10 @@ namespace API.Repository {
             {
                 throw new ArgumentNullException("entity");
             }
-            else
-            {
-                entities.Add(entity);
-                var result = myContext.SaveChanges();
-                return result;
-            }
-        }
 
-        public int Delete(Key key)
-        {
-            if (entities == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-            else
-            {
-                Entity entity = entities.Find(key);
-                entities.Remove(entity);
-                var result = myContext.SaveChanges();
-                return result;
-            }
-        }
-
-        public IEnumerable<Entity> Get()
-        {
-            return entities.AsEnumerable();
-        }
-
-        public Entity Get(Key key)
-        {
-            return entities.Find(key);
+            entities.Add(entity);
+            var result = myContext.SaveChanges();
+            return result;
         }
 
         public int Update(Entity entity)
@@ -64,20 +51,24 @@ namespace API.Repository {
             {
                 throw new ArgumentNullException("entity");
             }
-            else
-            {
-                try
-                {
-                    myContext.Entry(entity).State = EntityState.Modified;
-                    var result = myContext.SaveChanges();
-                    return result;
-                }
 
-                catch (Exception)
-                {
-                    throw;
-                }
+            myContext.Entry(entity).State = EntityState.Modified;
+            var result = myContext.SaveChanges();
+            return result;
+        }
+
+        public int Delete(Key key)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException("entity");
             }
+
+            Entity entity = entities.Find(key);
+            entities.Remove(entity);
+            var result = myContext.SaveChanges();
+            return result;
         }
     }
 }
+

@@ -7,7 +7,9 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace API.Models
+
 {
+
     [Table("Tb_M_University")]
     public class University
     {
@@ -17,8 +19,8 @@ namespace API.Models
 
         [Required(ErrorMessage = "This field is required")]
         public string Name { get; set; }
-        [JsonIgnore]
 
+        [JsonIgnore]
         public virtual List<Education> Education { get; set; } = new List<Education>();
     }
 }

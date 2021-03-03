@@ -3,32 +3,80 @@ using API.Models;
 using API.ViewModels;
 using Dapper;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace API.Repository.Data
 {
     public class AccountRepository : GeneralRepository<MyContext, Account, string>
     {
-        readonly DynamicParameters _parameters = new DynamicParameters();
-        private readonly IConfiguration _configuration;
+
+        private readonly MyContext myContext;
+        public IConfiguration _configuration;
+        readonly DynamicParameters parameters = new DynamicParameters();
 
         public AccountRepository(MyContext myContext, IConfiguration configuration) : base(myContext)
         {
+            this.myContext = myContext;
             _configuration = configuration;
         }
 
-        public UserVM Login(LoginVM loginVM)
-        {
-            var _userRepository = new GeneralDapperRepository<UserVM>(_configuration);
 
-            _parameters.Add("@Email", loginVM.Email);
-            _parameters.Add("@Password", loginVM.Password);
-            var result = _userRepository.Query("SP_RetrieveLogin", _parameters);
-            return result;
+        public LoginVM Login(LoginVM loginVM)
+        {
+            GeneralDapperRepository<LoginVM> generalDapper = new GeneralDapperRepository<LoginVM>(_configuration);
+          
+            var spName = "SP_LoginAccount";
+            parameters.Add("@email", loginVM.Email);
+            parameters.Add("@password", loginVM.Password);
+            var result = generalDapper.ExecSPList(spName, parameters);
+
+            LoginVM hasil = new LoginVM();
+            hasil.Email = result.FirstOrDefault().Email;
+            hasil.FullName = result.FirstOrDefault().FullName;
+            hasil.Roles = result.Select(x => x.RoleName); //select semua role dari hasil 
+
+            return hasil;
+        }
+
+        public int Register(RegisterVM registerVM)
+        {
+            var model = myContext.Accounts
+                   .Include(p => p.Person)
+                   .Include(ra => ra.RoleAccounts)
+                   .ToList();
+
+            var checkEmail = myContext.Persons
+                           .SingleOrDefault(e => e.Email.Equals(registerVM.Email));
+
+            if (checkEmail == null)
+            {
+                Person person = new Person();
+                Account account = new Account();
+
+                person.NIK = registerVM.NIK;
+                person.FirstName = registerVM.FirstName;
+                person.LastName = registerVM.LastName;
+                person.BirthDate = registerVM.BirthDate;
+                person.Email = registerVM.Email;
+
+                account.Password = registerVM.Password;
+
+                myContext.Persons.Add(person);
+                myContext.Accounts.Add(account);
+
+                var result = myContext.SaveChanges();
+
+                return result;
+            }
+            return 0;
+
         }
     }
 }

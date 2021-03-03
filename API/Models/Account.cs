@@ -17,12 +17,13 @@ namespace API.Models
 
         [Required(ErrorMessage = "This field is required")]
         public string Password { get; set; }
-        [JsonIgnore]
 
+        [JsonIgnore]
         public virtual Person Person { get; set; }
-        [JsonIgnore]
 
+        [JsonIgnore]
         public virtual Profiling Profiling { get; set; }
+
         public virtual ICollection<AccountRole> AccountRoles {get; set; }
     }
 }

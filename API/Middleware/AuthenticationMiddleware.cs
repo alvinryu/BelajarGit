@@ -1,36 +1,45 @@
-﻿using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace API.Middleware
 {
-    public static class AuthenticationExtension
+
+    public static class AuthenticationMiddleware
+
     {
         public static IServiceCollection AddTokenAuthentication(this IServiceCollection services, IConfiguration config)
         {
             var secret = config.GetSection("JwtConfig").GetSection("secret").Value;
 
             var key = Encoding.ASCII.GetBytes(secret);
-            services.AddAuthentication(x =>
+
+
+            // Adding Authentication
+            services.AddAuthentication(options =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                .AddJwtBearer(x =>
+            // Adding JWT Bearer
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    x.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidIssuer = "localhost",
-                        ValidAudience = "localhost"
-                    };
-                });
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidIssuer = "localhost",
+                    ValidAudience = "localhost"
+                };
+            });
 
             return services;
         }
     }
 }
+

@@ -26,8 +26,8 @@ namespace API.Models
         public int Salary { get; set; }
 
         public string Email { get; set; }
-        [JsonIgnore]
 
+        [JsonIgnore]
         public virtual Account Account { get; set; }
 
     }

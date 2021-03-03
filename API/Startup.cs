@@ -1,14 +1,21 @@
-using API.Context;
-using API.Middleware;
-using API.Repository.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using API.Context;
+using API.Repository.Data;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using API.Middleware;
 
 namespace API
 {
@@ -20,31 +27,39 @@ namespace API
         }
 
         public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews()
-                .AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-            services.AddMvc()
-                .AddNewtonsoftJson(options =>
-                options.SerializerSettings.DefaultValueHandling =
-                Newtonsoft.Json.DefaultValueHandling.Ignore
-                );
-            services.AddTokenAuthentication(Configuration);
+            services.AddControllers();
+
             services.AddScoped<UniversityRepository>();
             services.AddScoped<PersonRepository>();
-            services.AddScoped<EducationRepository>();
             services.AddScoped<AccountRepository>();
+            services.AddScoped<EducationRepository>();
             services.AddScoped<ProfilingRepository>();
-            services.AddDbContext<MyContext>(
-                options =>
-            options.UseLazyLoadingProxies()
-            .UseSqlServer(Configuration.GetConnectionString(
-                "MyContext"
-                )
-            ));
+            services.AddScoped<RoleRepository>();
+            services.AddScoped<RoleAccountRepository>();
+
+            services.AddDbContext<MyContext>(options =>
+            options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("MyContext")));
+
+            services.AddMvc()
+                .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                );
+            
+            services.AddMvc()
+                .AddNewtonsoftJson(options =>
+                options.SerializerSettings.DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore
+                );
+
+            services.AddTokenAuthentication(Configuration);
+
             services.AddSwaggerGen(c =>
             {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Swagger API Documentation", Version = "v1" });
+
                 var securityScheme = new OpenApiSecurityScheme
                 {
                     Name = "JWT Authentication",
@@ -61,20 +76,21 @@ namespace API
                 };
                 c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {securityScheme, new string[] { }}
-    });
-                var basicSecurityScheme = new OpenApiSecurityScheme
+
                 {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "basic",
-                    Reference = new OpenApiReference { Id = "BasicAuth", Type = ReferenceType.SecurityScheme }
-                };
-                c.AddSecurityDefinition(basicSecurityScheme.Reference.Id, basicSecurityScheme);
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {basicSecurityScheme, new string[] { }}
-    });
+                    {securityScheme, new string[] { }}
+                });
+                            var basicSecurityScheme = new OpenApiSecurityScheme
+                            {
+                                Type = SecuritySchemeType.Http,
+                                Scheme = "basic",
+                                Reference = new OpenApiReference { Id = "BasicAuth", Type = ReferenceType.SecurityScheme }
+                            };
+                            c.AddSecurityDefinition(basicSecurityScheme.Reference.Id, basicSecurityScheme);
+                            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {basicSecurityScheme, new string[] { }}
+                });
             });
         }
 
@@ -84,24 +100,26 @@ namespace API
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
             app.UseSwagger();
+
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger API Documentation");
-                app.UseDeveloperExceptionPage();
-            }
-            );
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
         }
     }
 }

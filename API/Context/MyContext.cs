@@ -13,13 +13,14 @@ namespace API.Context
         {
 
         }
+
         public DbSet<Person> Persons { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Profiling> Profilings { get; set; }
         public DbSet<Education> Educations { get; set; }
         public DbSet<University> Universities { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<AccountRole> AccountRoles { get; set; }
+
+        public DbSet<RoleAccount> RoleAccounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,20 +42,22 @@ namespace API.Context
             modelBuilder.Entity<Education>()
               .HasOne(education => education.University)
               .WithMany(university => university.Education)
-              .HasForeignKey(education => education.Univeristy_Id);
 
-            modelBuilder.Entity<AccountRole>()
-                .HasKey(accountRole => new { accountRole.NIK, accountRole.Id });
+              .HasForeignKey(education => education.University_Id);
 
-            modelBuilder.Entity<AccountRole>()
-              .HasOne(accountRole => accountRole.Account)
-              .WithMany(account => account.AccountRoles)
-              .HasForeignKey(accountRole => accountRole.NIK);
+            modelBuilder.Entity<RoleAccount>()
+                .HasKey(ra => new { ra.Role_Id, ra.Account_NIK });
 
-            modelBuilder.Entity<AccountRole>()
-              .HasOne(accountRole => accountRole.Role)
-              .WithMany(role =>role.AccountRoles)
-              .HasForeignKey(accountRole => accountRole.Id);
+            modelBuilder.Entity<RoleAccount>()
+                .HasOne(ra => ra.Role)
+                .WithMany(role => role.RoleAccounts)
+                .HasForeignKey(ra => ra.Role_Id);
+
+            modelBuilder.Entity<RoleAccount>()
+                .HasOne(ra => ra.Account)
+                .WithMany(account => account.RoleAccounts)
+                .HasForeignKey(ra => ra.Account_NIK);
         }
     }
 }
+

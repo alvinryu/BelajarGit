@@ -1,5 +1,5 @@
-﻿using API.Models;
-using API.Context;
+﻿using API.Context;
+using API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace API.Repository.Data
     {
         public EducationRepository(MyContext myContext) : base(myContext)
         {
-
         }
     }
 }
+

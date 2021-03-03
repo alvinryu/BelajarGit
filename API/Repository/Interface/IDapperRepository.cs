@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace API.Repository.Interface
 {
-    public interface IDapperRepository<Entity> where Entity : class
+    interface IDapperRepository<Entity>
+        where Entity : class     
     {
-        Entity Query(string query, DynamicParameters parameters);
-        IEnumerable<Entity> Get(string query, DynamicParameters parameters);
+        Entity ExecSP(string spName, DynamicParameters parameters);
+        IEnumerable<Entity> ExecSPList(string spName, DynamicParameters parameters);
     }
 }
+
