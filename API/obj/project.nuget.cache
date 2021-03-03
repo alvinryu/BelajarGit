@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hijccet4VHohV2XZ15wFelgXW3HKn2fyM+Z/2X54fRtDznfYyms+nBwtHLuPLrTQMxAgCT3pgNksGKURtVnewQ==",
+  "dgSpecHash": "TZRhp+7WGdlYihHz50LWD1OTKxwbHAy+C69p+pPTakLHrz3o2EHBobaPyTEhusEKh4eUsJwf2lILcW0BU+vBqA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Admin\\Documents\\Exercise\\API\\API.csproj",
+  "projectFilePath": "C:\\Users\\Admin\\Documents\\Exercise\\BelajarGit\\API\\API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\castle.core\\4.4.1\\castle.core.4.4.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\dapper\\2.0.78\\dapper.2.0.78.nupkg.sha512",
